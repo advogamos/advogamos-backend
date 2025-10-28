@@ -26,6 +26,20 @@ const anthropic = new Anthropic({
     apiKey: process.env.ANTHROPIC_API_KEY,
 });
 
+const STATIC_SOURCES = [
+    'Código Civil português',
+    'Lei n.º 61/2008 (Regime jurídico do divórcio)',
+    'Código do Registo Civil',
+    'Jurisprudência dos Tribunais Superiores'
+];
+
+const STATIC_RESPONSE_FIELDS = {
+    category: 'Direito da Família',
+    jurisdiction: 'Portugal',
+    caselaw: 'Consulte jurisprudência específica conforme o caso concreto nos tribunais superiores.',
+    model: 'claude-sonnet-4'
+};
+
 // Rota de busca jurídica
 app.post('/api/search', async (req, res) => {
     try {
@@ -64,18 +78,10 @@ Forneça sua resposta em português de forma clara e estruturada, incluindo:
         const response = {
             title: query.length > 100 ? query.substring(0, 97) + '...' : query,
             content: responseText,
-            sources: [
-                'Código Civil português',
-                'Lei n.º 61/2008 (Regime jurídico do divórcio)',
-                'Código do Registo Civil',
-                'Jurisprudência dos Tribunais Superiores'
-            ],
-            category: 'Direito da Família',
-            jurisdiction: 'Portugal',
-            caselaw: 'Consulte jurisprudência específica conforme o caso concreto nos tribunais superiores.',
+            sources: STATIC_SOURCES,
+            ...STATIC_RESPONSE_FIELDS,
             timestamp: new Date().toISOString(),
-            query: query,
-            model: 'claude-sonnet-4'
+            query: query
         };
 
         console.log('✅ Resposta enviada com sucesso');
